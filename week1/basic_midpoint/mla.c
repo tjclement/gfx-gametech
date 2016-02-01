@@ -34,20 +34,23 @@
  *
  */
 void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
-  int ix,iy;
-  int x,y;
-  
-  PutPixel(s,x0,y0,colour);
-  PutPixel(s,x1,y1,colour);
-  
-  if(x1>x0) ix=1; else ix=-1;
-  for(x=x0;x!=x1;x+=ix)
-    PutPixel(s,x,y0,colour);
-  
-  if(y1>y0) iy=1; else iy=-1;
-  for(y=y0;y!=y1;y+=iy)
-    PutPixel(s,x1,y,colour);
+//    PutPixel(s, x1, y1, colour);
+    int x = x0, y = y0, a = (y0 - y1), b = (x1 - x0), c = ((x0 * y1) - (x1 * y0));
 
-  return;
+    /* https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Line_equation
+     * f(x, y) = ax + by + c = 0 */
+
+    float slope = (float) (y1 - y0) / (x1 - x0);
+    printf("%.2f %d\r\n", slope, colour);
+    if (slope >= 0.0 && slope <= 1.0) {
+        for (; x < x1; x += 1) {
+            /* If f(x+1, y+0.5) >= 0, we need to decrement y */
+            if(((a * (x + 1)) + (b * (y + 0.5)) + c) >= 0) {
+                y++;
+            }
+            PutPixel(s, x, y, colour);
+        }
+    }
+
+    return;
 }
-
