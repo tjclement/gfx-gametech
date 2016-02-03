@@ -48,12 +48,12 @@ void ToOctantZeroFrom(int octant, int *x, int *y) {
         *y = tmp;
     }
 
-    if (octant == 3 || octant == 4 || octant == 5 || octant == 6) {
+    if (octant == 1 || octant == 2 || octant == 3 || octant == 4) {
         /* Negate first axis*/
         *x *= -1;
     }
 
-    if (octant == 2 || octant == 4 || octant == 5 || octant == 7) {
+    if (octant == 1 || octant == 4 || octant == 6 || octant == 7) {
         /* Negate second axis*/
         *y *= -1;
     }
@@ -67,12 +67,12 @@ void FromOctantZeroTo(int octant, int *x, int *y) {
         *y = tmp;
     }
 
-    if (octant == 2 || octant == 3 || octant == 4 || octant == 5) {
+    if (octant == 1 || octant == 3 || octant == 4 || octant == 6) {
         /* Negate first axis*/
         *x *= -1;
     }
 
-    if (octant == 4 || octant == 5 || octant == 6 || octant == 7) {
+    if (octant == 1 || octant == 2 || octant == 4 || octant == 7) {
         /* Negate second axis*/
         *y *= -1;
     }
@@ -121,7 +121,7 @@ void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
     printf("3 - %d %d %d %d\r\n", x0, y0, x1, y1);
 
     /* Width/height need to be calculated again after potentially swapping axes */
-    width = x1 - x0, height = y1 - y0;
+    width = abs(x1 - x0), height = abs(y1 - y0);
 
     /* https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Line_equation */
 
