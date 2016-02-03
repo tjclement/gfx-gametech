@@ -16,37 +16,80 @@
 
 #include "SDL.h"
 #include "init.h"
+#include "mla.h"
 
 void WriteNormalizedPixel(SDL_Surface *s, int octant, int x, int y, Uint32 colour) {
-    int mid_x=s->w/2, mid_y=s->h/2;
-
-
-    switch(octant) {
-        case 0:
-            PutPixel(s, x, y, colour);
-            break;
-        case 1:
-            PutPixel(s, y, x, colour);
-            break;
-        case 2:
-            PutPixel(s, mid_x-(mid_x-y), x, colour);
-            break;
-        case 3:
-            PutPixel(s, mid_x-(mid_x-x), y, colour);
-            break;
-        case 4:
-            PutPixel(s, mid_x-(mid_x-x), mid_y-(mid_y-y), colour);
-            break;
-        case 5:
-            PutPixel(s, mid_x-(mid_x-y), mid_y-(mid_y-x), colour);
-            break;
-        case 6:
-            PutPixel(s, y, mid_y-(mid_y-x), colour);
-            break;
-        case 7:
-            PutPixel(s, x, mid_y-(mid_y-y), colour);
-            break;
+    FromOctantZeroTo(octant, &x, &y);
+    ToTopLeftOrigin(s, &x, &y);
+    if(x<0 || y<0){
+        printf(" x.x %d %d\r\n", x, y);
+        return;
     }
+    PutPixel(s, x, y, colour);
+}
+
+void ToCenterOrigin(SDL_Surface *s, int *x, int *y) {
+    int mid_x = s->w / 2, mid_y = s->h / 2;
+    *x -= mid_x;
+    *y -= mid_y;
+}
+
+void ToTopLeftOrigin(SDL_Surface *s, int *x, int *y) {
+    int mid_x = s->w / 2, mid_y = s->h / 2;
+    *x += mid_x;
+    *y += mid_y;
+}
+
+void ToOctantZeroFrom(int octant, int *x, int *y) {
+    if (octant == 1 || octant == 2 || octant == 5 || octant == 6) {
+        /* Flip x and y axes */
+        int tmp = *x;
+        *x = *y;
+        *y = tmp;
+    }
+
+    if (octant == 3 || octant == 4 || octant == 5 || octant == 6) {
+        /* Negate first axis*/
+        *x *= -1;
+    }
+
+    if (octant == 2 || octant == 4 || octant == 5 || octant == 7) {
+        /* Negate second axis*/
+        *y *= -1;
+    }
+}
+
+void FromOctantZeroTo(int octant, int *x, int *y) {
+    if (octant == 1 || octant == 2 || octant == 5 || octant == 6) {
+        /* Flip x and y axes */
+        int tmp = *x;
+        *x = *y;
+        *y = tmp;
+    }
+
+    if (octant == 2 || octant == 3 || octant == 4 || octant == 5) {
+        /* Negate first axis*/
+        *x *= -1;
+    }
+
+    if (octant == 4 || octant == 5 || octant == 6 || octant == 7) {
+        /* Negate second axis*/
+        *y *= -1;
+    }
+}
+
+int DetermineOctant(int width, int height) {
+    if (width > 0 && height <= 0) {
+        return width >= height ? 0 : 1;
+    } else if (width <= 0 && height <= 0) {
+        return abs(width) < abs(height) ? 2 : 3;
+    } else if (width < 0 && height >= 0) {
+        return abs(width) > height ? 4 : 5;
+    } else if (width >= 0 && height > 0) {
+        return width < height ? 6 : 7;
+    }
+    printf("Serious error: no such octant exists.");
+    exit(-1);
 }
 
 /*
@@ -66,38 +109,34 @@ void WriteNormalizedPixel(SDL_Surface *s, int octant, int x, int y, Uint32 colou
  *
  */
 void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
-    int x = x0, y = y0, width = x1 - x0, height = y1 - y0;
+    printf("1 - %d %d %d %d\r\n", x0, y0, x1, y1);
+    int width = x1 - x0, height = y1 - y0;
+    ToCenterOrigin(s, &x0, &y0);
+    ToCenterOrigin(s, &x1, &y1);
 
-    int octant;
+    printf("2 - %d %d %d %d\r\n", x0, y0, x1, y1);
+    int octant = DetermineOctant(width, height);
+    ToOctantZeroFrom(octant, &x0, &y0);
+    ToOctantZeroFrom(octant, &x1, &y1);
+    printf("3 - %d %d %d %d\r\n", x0, y0, x1, y1);
 
-    if(width > 0 && height <= 0) {
-        octant = width >= height ? 0 : 1;
-    } else if(width <= 0 && height <= 0) {
-        octant = abs(width) < abs(height) ? 2 : 3;
-    } else if(width < 0 && height >= 0) {
-        octant = abs(width) > height ? 4 : 5;
-    } else if (width >= 0 && height > 0) {
-        octant = width < height ? 6 : 7;
-    }
+    /* Width/height need to be calculated again after potentially swapping axes */
+    width = x1 - x0, height = y1 - y0;
 
     /* https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Line_equation */
 
-    height = abs(height);
-    width = abs(width);
-
     int d = 2 * height - width;
-    printf("%d %d", x, y);
-    WriteNormalizedPixel(s, octant, x, y, colour);
+    WriteNormalizedPixel(s, octant, x0, y0, colour);
     if (d > 0) {
-        y -= 1;
+        y0 -= 1;
         d -= 2 * width;
     }
 
-    for (; (x1 < 0 && x > x1) || x < x1; x += 1) {
-        WriteNormalizedPixel(s, octant, x, y, colour);
+    for (; (x1 < 0 && x0 > x1) || x0 < x1; x0 += 1) {
+        WriteNormalizedPixel(s, octant, x0, y0, colour);
         d += 2 * height;
         if (d > 0) {
-            y -= 1;
+            y0 -= 1;
             d -= 2 * width;
         }
     }
