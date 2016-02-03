@@ -50,13 +50,14 @@ void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
 
     if (y1 - y0 < 0) {
         /* Top quadrants */
-        dy = 1;
+        dy = -1;
     } else {
         /* Bottom quadrants */
-        dy = -1;
+        dy = 1;
     }
 
     int d = 2*height - width;
+    printf("%d %d %d %d %d\r\n", dx, dy, d, width, height);
     PutPixel(s, x, y, colour);
     if (d > 0) {
         y += dy;
@@ -64,8 +65,10 @@ void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
     }
 
     for (; (x1 < 0 && x > x1) || x < x1; x += dx) {
+//        printf("before %d", d);
         PutPixel(s, x, y, colour);
-        d += 2*height;
+        d += 2 * dy * height;
+//        printf("after %d\r\n", d);
         if (d > 0) {
             y += dy;
             d -= 2*width;
