@@ -6,7 +6,7 @@
  *
  */
 //test 
-#include "SDL.h"   
+#include "SDL.h"
 #include "init.h"
 
 SDL_Surface *screen;

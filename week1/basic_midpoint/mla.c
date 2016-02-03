@@ -14,7 +14,7 @@
  * (always fill in these fields before submitting!!)
  */
 
-#include "SDL.h"   
+#include "SDL.h"
 #include "init.h"
 
 /*
