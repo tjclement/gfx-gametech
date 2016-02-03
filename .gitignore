@@ -30,5 +30,7 @@
 
 # Debug files
 *.dSYM/
+
+.idea/
 week1/.idea
 main
