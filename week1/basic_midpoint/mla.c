@@ -80,7 +80,7 @@ void FromOctantZeroTo(int octant, int *x, int *y) {
 
 int DetermineOctant(int width, int height) {
     if (width > 0 && height <= 0) {
-        return width >= height ? 0 : 1;
+        return width >= abs(height) ? 0 : 1;
     } else if (width <= 0 && height <= 0) {
         return abs(width) < abs(height) ? 2 : 3;
     } else if (width < 0 && height >= 0) {
