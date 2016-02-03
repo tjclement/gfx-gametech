@@ -85,8 +85,8 @@ void DrawFigure(SDL_Surface *screen) {
     }
 
     /* draw a line */
-    mla(screen, mid_x, mid_y, 
-        (int)roundf(size*cos(2*M_PI/32*i))+mid_x, 
+    mla(screen, mid_x, mid_y,
+        (int)roundf(size*cos(2*M_PI/32*i))+mid_x,
         (int)roundf(size*sin(2*M_PI/32*i))+mid_y, colour);
   }
 

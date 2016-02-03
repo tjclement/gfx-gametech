@@ -35,20 +35,40 @@
  */
 void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
 //    PutPixel(s, x1, y1, colour);
-    int x = x0, y = y0, a = (y0 - y1), b = (x1 - x0), c = ((x0 * y1) - (x1 * y0));
+    int x = x0, y = y0, width = x1 - x0, height = y1 - y0;
+    int dx, dy;
 
-    /* https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Line_equation
-     * f(x, y) = ax + by + c = 0 */
+    /* https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Line_equation */
 
-    float slope = (float) (y1 - y0) / (x1 - x0);
-    printf("%.2f %d\r\n", slope, colour);
-    if (slope >= 0.0 && slope <= 1.0) {
-        for (; x < x1; x += 1) {
-            /* If f(x+1, y+0.5) >= 0, we need to decrement y */
-            if (((a * (x + 1)) + (b * (y + 0.5)) + c) >= 0) {
-                y++;
-            }
-            PutPixel(s, x, y, colour);
+    if (x1 - x0 > 0) {
+        /* Righthand quadrants */
+        dx = 1;
+    } else {
+        /* Lefthand quadrants */
+        dx = -1;
+    }
+
+    if (y1 - y0 < 0) {
+        /* Top quadrants */
+        dy = 1;
+    } else {
+        /* Bottom quadrants */
+        dy = -1;
+    }
+
+    int d = 2*height - width;
+    PutPixel(s, x, y, colour);
+    if (d > 0) {
+        y += dy;
+        d -= 2*width;
+    }
+
+    for (; (x1 < 0 && x > x1) || x < x1; x += dx) {
+        PutPixel(s, x, y, colour);
+        d += 2*height;
+        if (d > 0) {
+            y += dy;
+            d -= 2*width;
         }
     }
 
