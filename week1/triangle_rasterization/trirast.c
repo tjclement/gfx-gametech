@@ -5,7 +5,7 @@
  *
  * Student name Tom Clement & Matthijs Klijn
  * Student email Tom.justme@gmail.com, matthijsthoolen@hotmail.com
- * Collegekaart ????????, 10447822
+ * Collegekaart 10468498, 10447822
  * Date 4-2-2016
  * Comments ........
  *
@@ -40,7 +40,6 @@ float findlow(float x, float y, float z) {
 /*
  * Returns the highest of 3 floats
  */
-
 float findhigh(float x, float y, float z) {
     if (y > x) x = y;
     if (z > x) x = z;
@@ -119,9 +118,9 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
 
             if (alpha >= 0.0 && beta >= 0.0 && gamma >= 0.0) {
 
-                if ((alpha > 0.0 || f_out_alpha > 0.0)
-                    && (beta > 0.0 || f_out_beta > 0.0)
-                    && (gamma > 0.0 || f_out_gamma > 0.0)) {
+                if ((f(x1, y1, x2, y2, x, y) / f_alpha > 0.0 || f_out_alpha > 0.0)
+                    && (f(x2, y2, x0, y0, x, y) / f_beta > 0.0 || f_out_beta > 0.0)
+                    && (f(x0, y0, x1, y1, x, y) / f_gamma > 0.0 || f_out_gamma > 0.0)) {
                     PutPixel(x, y, r, g, b);
                 }
 
