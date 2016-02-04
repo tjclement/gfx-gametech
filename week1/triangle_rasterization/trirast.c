@@ -75,15 +75,12 @@ void draw_triangle(float x0, float y0, float x1, float y1, float x2, float y2,
             float gamma = f(x0, y0, x1, y1, x, y) / f(x0, y0, x1, y1, x2, y2);
 
             if (alpha >= 0.0 && beta >= 0.0 && gamma >= 0.0) {
-
                 if ((alpha > 0.0 || f(x1, y1, x2, y2, -1, -1) * f(x1, y1, x2, y2, x0, y0) > 0.0)
                     && (beta > 0.0 || f(x2, y2, x0, y0, -1, -1) * f(x2, y2, x0, y0, x1, y1) > 0.0)
                     && (gamma > 0.0 || f(x0, y0, x1, y1, -1, -1) * f(x0, y0, x1, y1, x2, y2) > 0.0)) {
                     PutPixel(x, y, r, g, b);
                 }
-
             }
-
         }
     }
 }
@@ -92,6 +89,7 @@ void draw_triangle(float x0, float y0, float x1, float y1, float x2, float y2,
 void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float y2,
                              byte r, byte g, byte b) {
 
+    int hasBegunRow;
     float alpha, beta, gamma;
 
     float x_min = findlow(x0, x1, x2);
@@ -110,6 +108,7 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
 
     // For each pixel in the triangle check if we need to print it
     for (float y = y_min; y < y_max; y++) {
+        hasBegunRow = false;
         for (float x = x_min; x < x_max; x++) {
 
             alpha = f(x1, y1, x2, y2, x, y) / f_alpha;
@@ -117,13 +116,14 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
             gamma = f(x0, y0, x1, y1, x, y) / f_gamma;
 
             if (alpha >= 0.0 && beta >= 0.0 && gamma >= 0.0) {
-
                 if ((f(x1, y1, x2, y2, x, y) / f_alpha > 0.0 || f_out_alpha > 0.0)
                     && (f(x2, y2, x0, y0, x, y) / f_beta > 0.0 || f_out_beta > 0.0)
                     && (f(x0, y0, x1, y1, x, y) / f_gamma > 0.0 || f_out_gamma > 0.0)) {
                     PutPixel(x, y, r, g, b);
+                    hasBegunRow = true;
                 }
-
+            } else if(hasBegunRow) {
+                continue;
             }
 
         }
