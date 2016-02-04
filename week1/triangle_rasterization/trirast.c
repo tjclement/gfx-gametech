@@ -105,12 +105,12 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
     float f_out_beta = f(x2, y2, x0, y0, -1, -1) * f_beta;
     float f_out_gamma = f(x0, y0, x1, y1, -1, -1) * f_gamma;
 
-    float f_alpha_increment_x = (y1 - y2);
-    float f_alpha_increment_y = (x2 - x1);
-    float f_beta_increment_x = (y2 - y0);
-    float f_beta_increment_y = (x0 - x2);
-    float f_gamma_increment_x = (y0 - y1);
-    float f_gamma_increment_y = (x1 - x0);
+    float f_alpha_increment_x = (y1 - y2) / f_alpha;
+    float f_alpha_increment_y = (x2 - x1) / f_alpha;
+    float f_beta_increment_x = (y2 - y0) / f_beta;
+    float f_beta_increment_y = (x0 - x2) / f_beta;
+    float f_gamma_increment_x = (y0 - y1) / f_gamma;
+    float f_gamma_increment_y = (x1 - x0) / f_gamma;
 
     float x, y, alpha_incremental, beta_incremental, gamma_incremental;
     float alpha_orig = f(x1, y1, x2, y2, x_min, y_min) / f_alpha;
