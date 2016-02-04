@@ -30,26 +30,26 @@
 /*
  * Returns the lowest of 3 floats
  */
-float findlow(float x, float y, float z) {
+float findlow(float x0, float x1, float x2) {
 
-    if (y < x) x = y;
+    if (x1 < x0) x0 = x1;
 
-    if (z < x) x = z;
+    if (x2 < x0) x0 = x2;
 
-    return x;
+    return x0;
 }
 
 
 /*
  * Returns the highest of 3 floats
  */
-float findhigh(float x, float y, float z) {
+float findhigh(float x0, float x1, float x2) {
 
-    if (y > x) x = y;
+    if (x1 > x0) x0 = x1;
 
-    if (z > x) x = z;
+    if (x2 > x0) x0 = x2;
 
-    return x;
+    return x0;
 }
 
 
