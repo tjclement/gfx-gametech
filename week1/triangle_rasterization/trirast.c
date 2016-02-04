@@ -20,14 +20,6 @@
 #include "types.h"
 
 /*
- * Rasterize a single triangle.
- * The triangle is specified by its corner coordinates
- * (x0,y0), (x1,y1) and (x2,y2).
- * The triangle is drawn in color (r,g,b).
- */
-
-
-/*
  * Returns the lowest of 3 floats
  */
 float findlow(float x, float y, float z) {
@@ -57,6 +49,12 @@ float f(float x0, float y0, float x1, float y1,
 }
 
 
+/*
+ * Rasterize a single triangle.
+ * The triangle is specified by its corner coordinates
+ * (x0,y0), (x1,y1) and (x2,y2).
+ * The triangle is drawn in color (r,g,b).
+ */
 void draw_triangle(float x0, float y0, float x1, float y1, float x2, float y2,
                    byte r, byte g, byte b) {
 
@@ -74,6 +72,7 @@ void draw_triangle(float x0, float y0, float x1, float y1, float x2, float y2,
             float beta = f(x2, y2, x0, y0, x, y) / f(x2, y2, x0, y0, x1, y1);
             float gamma = f(x0, y0, x1, y1, x, y) / f(x0, y0, x1, y1, x2, y2);
 
+            // Check if the pixel is inside the triangle and check for edge sharing
             if (alpha >= 0.0 && beta >= 0.0 && gamma >= 0.0) {
                 if ((alpha > 0.0 || f(x1, y1, x2, y2, -1, -1) * f(x1, y1, x2, y2, x0, y0) > 0.0)
                     && (beta > 0.0 || f(x2, y2, x0, y0, -1, -1) * f(x2, y2, x0, y0, x1, y1) > 0.0)
@@ -86,6 +85,12 @@ void draw_triangle(float x0, float y0, float x1, float y1, float x2, float y2,
 }
 
 
+/*
+ * Rasterize a single triangle, optimized version.
+ * The triangle is specified by its corner coordinates
+ * (x0,y0), (x1,y1) and (x2,y2).
+ * The triangle is drawn in color (r,g,b).
+ */
 void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float y2,
                              byte r, byte g, byte b) {
 
@@ -97,13 +102,13 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
     float y_min = findlow(y0, y1, y2);
     float y_max = findhigh(y0, y1, y2);
 
-    const float f_alpha = f(x1, y1, x2, y2, x0, y0);
-    const float f_beta = f(x2, y2, x0, y0, x1, y1);
-    const float f_gamma = f(x0, y0, x1, y1, x2, y2);
+    float f_alpha = f(x1, y1, x2, y2, x0, y0);
+    float f_beta = f(x2, y2, x0, y0, x1, y1);
+    float f_gamma = f(x0, y0, x1, y1, x2, y2);
 
-    const float f_out_alpha = f(x1, y1, x2, y2, -1, -1) * f_alpha;
-    const float f_out_beta = f(x2, y2, x0, y0, -1, -1) * f_beta;
-    const float f_out_gamma = f(x0, y0, x1, y1, -1, -1) * f_gamma;
+    float f_out_alpha = f(x1, y1, x2, y2, -1, -1) * f_alpha;
+    float f_out_beta = f(x2, y2, x0, y0, -1, -1) * f_beta;
+    float f_out_gamma = f(x0, y0, x1, y1, -1, -1) * f_gamma;
 
     float f_alpha_increment_x = (y1 - y2) / f_alpha;
     float f_alpha_increment_y = (x2 - x1) / f_alpha;
@@ -120,18 +125,22 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
     // For each pixel in the triangle check if we need to print it
     for (y = y_min; y < y_max; y++) {
         hasBegunRow = 0;
+
         alpha_incremental = alpha_orig;
         beta_incremental = beta_orig;
         gamma_incremental = gamma_orig;
-        
+
         for (x = x_min; x < x_max; x++) {
             if (alpha_incremental >= 0.0 && beta_incremental >= 0.0 && gamma_incremental >= 0.0) {
+
+                // Check if the pixel is inside the triangle and check for edge sharing
                 if ((f(x1, y1, x2, y2, x, y) / f_alpha > 0.0 || f_out_alpha > 0.0)
                     && (f(x2, y2, x0, y0, x, y) / f_beta > 0.0 || f_out_beta > 0.0)
                     && (f(x0, y0, x1, y1, x, y) / f_gamma > 0.0 || f_out_gamma > 0.0)) {
                     PutPixel(x, y, r, g, b);
                     hasBegunRow = 1;
                 }
+            // Break if the end of the triangle is reached for this row
             } else if(hasBegunRow) {
                 break;
             }
