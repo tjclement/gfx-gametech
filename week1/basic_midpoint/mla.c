@@ -21,10 +21,6 @@
 void WriteNormalizedPixel(SDL_Surface *s, int octant, int x, int y, Uint32 colour) {
     FromOctantZeroTo(octant, &x, &y);
     ToTopLeftOrigin(s, &x, &y);
-    if(x<0 || y<0){
-        printf(" x.x %d %d\r\n", x, y);
-        return;
-    }
     PutPixel(s, x, y, colour);
 }
 
@@ -109,22 +105,18 @@ int DetermineOctant(int width, int height) {
  *
  */
 void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
-    printf("1 - %d %d %d %d\r\n", x0, y0, x1, y1);
     int width = x1 - x0, height = y1 - y0;
     ToCenterOrigin(s, &x0, &y0);
     ToCenterOrigin(s, &x1, &y1);
 
-    printf("2 - %d %d %d %d\r\n", x0, y0, x1, y1);
     int octant = DetermineOctant(width, height);
     ToOctantZeroFrom(octant, &x0, &y0);
     ToOctantZeroFrom(octant, &x1, &y1);
-    printf("3 - %d %d %d %d\r\n", x0, y0, x1, y1);
 
     /* Width/height need to be calculated again after potentially swapping axes */
     width = abs(x1 - x0), height = abs(y1 - y0);
 
     /* https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Line_equation */
-
     int d = 2 * height - width;
     WriteNormalizedPixel(s, octant, x0, y0, colour);
     if (d > 0) {
