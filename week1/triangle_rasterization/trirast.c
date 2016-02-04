@@ -101,13 +101,13 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
     float y_min = findlow(y0, y1, y2);
     float y_max = findhigh(y0, y1, y2);
 
-    float f_alpha = f(x1, y1, x2, y2, x0, y0);
-    float f_beta = f(x2, y2, x0, y0, x1, y1);
-    float f_gamma = f(x0, y0, x1, y1, x2, y2);
+    const float f_alpha = f(x1, y1, x2, y2, x0, y0);
+    const float f_beta = f(x2, y2, x0, y0, x1, y1);
+    const float f_gamma = f(x0, y0, x1, y1, x2, y2);
 
-    float f_out_alpha = f(x1, y1, x2, y2, -1, -1) * f_alpha;
-    float f_out_beta = f(x2, y2, x0, y0, -1, -1) * f_beta;
-    float f_out_gamma = f(x0, y0, x1, y1, -1, -1) * f_gamma;
+    const float f_out_alpha = f(x1, y1, x2, y2, -1, -1) * f_alpha;
+    const float f_out_beta = f(x2, y2, x0, y0, -1, -1) * f_beta;
+    const float f_out_gamma = f(x0, y0, x1, y1, -1, -1) * f_gamma;
 
     // For each pixel in the triangle check if we need to print it
     for (float y = y_min; y < y_max; y++) {
