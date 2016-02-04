@@ -106,10 +106,12 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
     const float f_out_beta = f(x2, y2, x0, y0, -1, -1) * f_beta;
     const float f_out_gamma = f(x0, y0, x1, y1, -1, -1) * f_gamma;
 
+    float x, y;
+
     // For each pixel in the triangle check if we need to print it
-    for (float y = y_min; y < y_max; y++) {
+    for (y = y_min; y < y_max; y++) {
         hasBegunRow = 0;
-        for (float x = x_min; x < x_max; x++) {
+        for (x = x_min; x < x_max; x++) {
 
             alpha = f(x1, y1, x2, y2, x, y) / f_alpha;
             beta = f(x2, y2, x0, y0, x, y) / f_beta;
@@ -125,7 +127,6 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
             } else if(hasBegunRow) {
                 break;
             }
-
         }
     }
 
