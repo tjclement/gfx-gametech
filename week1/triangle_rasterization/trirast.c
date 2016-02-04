@@ -108,7 +108,7 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
 
     // For each pixel in the triangle check if we need to print it
     for (float y = y_min; y < y_max; y++) {
-        hasBegunRow = false;
+        hasBegunRow = 0;
         for (float x = x_min; x < x_max; x++) {
 
             alpha = f(x1, y1, x2, y2, x, y) / f_alpha;
@@ -120,7 +120,7 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
                     && (f(x2, y2, x0, y0, x, y) / f_beta > 0.0 || f_out_beta > 0.0)
                     && (f(x0, y0, x1, y1, x, y) / f_gamma > 0.0 || f_out_gamma > 0.0)) {
                     PutPixel(x, y, r, g, b);
-                    hasBegunRow = true;
+                    hasBegunRow = 1;
                 }
             } else if(hasBegunRow) {
                 continue;
