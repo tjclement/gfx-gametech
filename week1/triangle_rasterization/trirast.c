@@ -90,7 +90,6 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
                              byte r, byte g, byte b) {
 
     int hasBegunRow;
-    float alpha, beta, gamma;
 
     float x_min = findlow(x0, x1, x2);
     float x_max = findhigh(x0, x1, x2);
@@ -106,18 +105,27 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
     const float f_out_beta = f(x2, y2, x0, y0, -1, -1) * f_beta;
     const float f_out_gamma = f(x0, y0, x1, y1, -1, -1) * f_gamma;
 
-    float x, y;
+    float f_alpha_increment_x = (y1 - y2);
+    float f_alpha_increment_y = (x2 - x1);
+    float f_beta_increment_x = (y2 - y0);
+    float f_beta_increment_y = (x0 - x2);
+    float f_gamma_increment_x = (y0 - y1);
+    float f_gamma_increment_y = (x1 - x0);
+
+    float x, y, alpha_incremental, beta_incremental, gamma_incremental;
+    float alpha_orig = f(x1, y1, x2, y2, x_min, y_min) / f_alpha;
+    float beta_orig = f(x2, y2, x0, y0, x_min, y_min) / f_beta;
+    float gamma_orig = f(x0, y0, x1, y1, x_min, y_min) / f_gamma;
 
     // For each pixel in the triangle check if we need to print it
     for (y = y_min; y < y_max; y++) {
         hasBegunRow = 0;
+        alpha_incremental = alpha_orig;
+        beta_incremental = beta_orig;
+        gamma_incremental = gamma_orig;
+        
         for (x = x_min; x < x_max; x++) {
-
-            alpha = f(x1, y1, x2, y2, x, y) / f_alpha;
-            beta = f(x2, y2, x0, y0, x, y) / f_beta;
-            gamma = f(x0, y0, x1, y1, x, y) / f_gamma;
-
-            if (alpha >= 0.0 && beta >= 0.0 && gamma >= 0.0) {
+            if (alpha_incremental >= 0.0 && beta_incremental >= 0.0 && gamma_incremental >= 0.0) {
                 if ((f(x1, y1, x2, y2, x, y) / f_alpha > 0.0 || f_out_alpha > 0.0)
                     && (f(x2, y2, x0, y0, x, y) / f_beta > 0.0 || f_out_beta > 0.0)
                     && (f(x0, y0, x1, y1, x, y) / f_gamma > 0.0 || f_out_gamma > 0.0)) {
@@ -127,7 +135,14 @@ void draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, f
             } else if(hasBegunRow) {
                 break;
             }
+            alpha_incremental += f_alpha_increment_x;
+            beta_incremental += f_beta_increment_x;
+            gamma_incremental += f_gamma_increment_x;
         }
+
+        alpha_orig += f_alpha_increment_y;
+        beta_orig += f_beta_increment_y;
+        gamma_orig += f_gamma_increment_y;
     }
 
 }
