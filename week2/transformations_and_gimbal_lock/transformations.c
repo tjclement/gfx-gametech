@@ -89,6 +89,8 @@ void myRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
     // Convert 'angle' to radians
 
     // Specify matrix B
+Then we multiply by the vector n to make sure it heads in the right direction (at right angles to both a and b).
+
 
     GLfloat B[16] =
     {
