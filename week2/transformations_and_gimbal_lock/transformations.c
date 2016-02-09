@@ -2,10 +2,11 @@
  *
  * Filename ........ transformations.c
  * Description ..... Contains the re-programmed translation, rotation and scaling functions
- * Student name ....
- * Student email ...
- * Collegekaart ....
- * Date ............
+ *
+ * Student name Tom Clement & Matthijs Klijn
+ * Student email Tom.justme@gmail.com, matthijsthoolen@hotmail.com
+ * Collegekaart 10468498, 10447822
+ * Date 9-2-2016
  * Comments ........
  *
  *
@@ -104,8 +105,6 @@ void myRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
     angle = (float) (angle * (M_PI / 180));
 
     // Specify matrix B
-Then we multiply by the vector n to make sure it heads in the right direction (at right angles to both a and b).
-
 
     GLfloat B[16] =
             {
