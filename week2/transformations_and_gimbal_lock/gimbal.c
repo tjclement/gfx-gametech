@@ -61,6 +61,7 @@ void ReSizeGLScene(int Width, int Height)
 
 void drawRotatedTeapot(float rotx, float roty, float rotz)
 {
+    /* Question 1: rotation order is defined here (z, y, x) */
     glRotatef(rotx, 1.0, 0.0, 0.0);
     glRotatef(roty, 0.0, 1.0, 0.0);
     glRotatef(rotz, 0.0, 0.0, 1.0);

@@ -18,7 +18,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
- 
+
 #define sqr(x) ((x)*(x))
 
 /* ANSI C/ISO C89 does not specify this constant (?) */
@@ -32,5 +32,15 @@ void myOrtho(GLdouble left,
              GLdouble top,
              GLdouble near,
              GLdouble far) {
+    /* Based on https://www.opengl.org/sdk/docs/man2/xhtml/glOrtho.xml */
+    GLdouble A[16] = {
+            2 / (right - left), 0, 0, -((right + left) / (right - left)),
+            0, 2 / (top - bottom), 0, -((top + bottom) / (top - bottom)),
+            0, 0, -2 / (far - near), -((far + near) / (far - near)),
+            0, 0, 0, 1
+    };
 
+    /* Transposing the matrix is needed since OpenGL's math examples
+     * are not in the column-based format that their functions need */
+    glMultTransposeMatrixd(A);
 }
