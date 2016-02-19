@@ -29,11 +29,11 @@ long factorial(int n) {
 }
 
 double binomial_distribution(int n, int k) {
-    return factorial(n) / (double)(factorial(k) * factorial(n - k));
+    return factorial(n) / (double) (factorial(k) * factorial(n - k));
 }
 
 double bernstein_polynomial(int n, int i, float u) {
-    return binomial_distribution(n, i) * pow(u, (double)i) * pow((1 - u), (double)(n-i));
+    return binomial_distribution(n, i) * pow(u, (double) i) * pow((1 - u), (double) (n - i));
 }
 
 /* Given a Bezier curve defined by the 'num_points' control points
@@ -44,14 +44,13 @@ double bernstein_polynomial(int n, int i, float u) {
  * respectively.
  */
 
-void
-evaluate_bezier_curve(float *x, float *y, control_point p[], int num_points, float u) {
+void evaluate_bezier_curve(float *x, float *y, control_point p[], int num_points, float u) {
     *x = 0.0;
     *y = 0.0;
     double bernstein = 0.0;
 
-    for(int i = 0; i < num_points; i++) {
-        bernstein = bernstein_polynomial(num_points-1, i, u);
+    for (int i = 0; i < num_points; i++) {
+        bernstein = bernstein_polynomial(num_points - 1, i, u);
         *x += bernstein * p[i].x;
         *y += bernstein * p[i].y;
     }
@@ -78,13 +77,11 @@ evaluate_bezier_curve(float *x, float *y, control_point p[], int num_points, flo
  * the curve.
  */
 
-void
-draw_bezier_curve(int num_segments, control_point p[], int num_points) {
+void draw_bezier_curve(int num_segments, control_point p[], int num_points) {
     float x, y;
-    double stepSize = 1.0 / num_points;
 
     glBegin(GL_LINE_STRIP);
-    for(double u = 0; u <= 1.001; u += 0.05) {
+    for (double u = 0; u <= 1.001; u += 0.001) {
         evaluate_bezier_curve(&x, &y, p, num_points, u);
         glVertex2f(x, y);
     }
@@ -97,8 +94,18 @@ draw_bezier_curve(int num_segments, control_point p[], int num_points) {
    Return 0 if no intersection exists.
 */
 
-int
-intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
+int intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
+    float bezier_x, bezier_y;
+
+    for (double u = 0; u <= 1.001; u += 0.001) {
+        evaluate_bezier_curve(&bezier_x, &bezier_y, p, 4, u);
+
+        if (fabs(bezier_x - x) <= 0.001) {
+            *y = bezier_y;
+            return 1;
+        }
+    }
+
     return 0;
 }
 
