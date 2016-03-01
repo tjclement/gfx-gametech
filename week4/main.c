@@ -1,9 +1,9 @@
 /* Computer Graphics and Game Technology, Assignment Ray-tracing
  *
- * Student name ....
- * Student email ...
- * Collegekaart ....
- * Date ............
+ * Student name Tom Clement & Matthijs Klijn
+ * Student email Tom.justme@gmail.com, matthijsthoolen@hotmail.com
+ * Collegekaart 10468498, 10447822
+ * Date 1-3-2016
  * Comments ........
  *
  *
@@ -184,20 +184,40 @@ ray_trace(void)
     image_plane_height = 2.0 * tan(0.5*VFOV/180*M_PI);
     image_plane_width = image_plane_height * (1.0 * framebuffer_width / framebuffer_height);
 
-    // ...
-    // ...
-    // ...
+    float bottom, left, Vec1_tmp, Vec2_tmp;
+
+    left = -image_plane_width * 0.5;
+    bottom = image_plane_height * 0.5;
+
+    fprintf(stderr, "%d %d\r\n", framebuffer_height, framebuffer_width);
 
     // Loop over all pixels in the framebuffer
     for (j = 0; j < framebuffer_height; j++)
     {
         for (i = 0; i < framebuffer_width; i++)
         {
-            // ...
-            // ...
-            // ...
 
-            // Output pixel color
+            /* With the formula "b + (t−b) * ((j+ 0.5) / ny)" the vector is calculted.
+             * (t-b) equals the negative image_plane_height
+             */
+            Vec1_tmp = bottom + (-image_plane_height*(j+0.5)/framebuffer_height);
+
+            /* using the formule: "l + (r−l) * ((i+ 0.5) / nx)" to calculate the vector
+             * (r-l) equals the image_plane_width.
+             */
+            Vec2_tmp = left + (image_plane_width*(i+0.5)/framebuffer_width);
+
+            /*
+            /* Calculate the vector through the pixel (for "Ray through pixel")
+             * Using the formula "Us * U + Vs * v + n * w"
+             */
+            vec3 UV = v3_add(v3_multiply(up_vector, Vec1_tmp), v3_multiply(right_vector, Vec2_tmp));
+            vec3 ray = v3_add(forward_vector, UV);
+
+            /* Fills the color */
+            color = ray_color(0, scene_camera_position, ray);
+
+            /* Output pixel color */
             put_pixel(i, j, color.x, color.y, color.z);
         }
 

@@ -102,10 +102,10 @@ void draw_bezier_curve(int num_segments, control_point p[], int num_points) {
 }
 
 /* Find the intersection of a cubic Bezier curve with the line X=x.
-   Return 1 if an intersection was found and place the corresponding y
-   value in *y.
-   Return 0 if no intersection exists.
-*/
+ * Return 1 if an intersection was found and place the corresponding y
+ * value in *y.
+ * Return 0 if no intersection exists.
+ */
 
 int intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
     float bezier_x, bezier_y;
