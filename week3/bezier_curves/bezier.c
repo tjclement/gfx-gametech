@@ -4,10 +4,10 @@
  * Date ............ 22.07.2009
  * Created by ...... Paul Melis
  *
- * Student name ....
- * Student email ...
- * Collegekaart ....
- * Date ............
+ * Student name Tom Clement & Matthijs Klijn
+ * Student email Tom.justme@gmail.com, matthijsthoolen@hotmail.com
+ * Collegekaart 10468498, 10447822
+ * Date 18-2-2016
  * Comments ........
  *
  *
@@ -18,6 +18,9 @@
 #include "bezier.h"
 #include <stdio.h>
 
+/*
+ * Calculate the factorial of a given ingeger n
+ */
 long factorial(int n) {
     long result = 1;
 
@@ -28,10 +31,16 @@ long factorial(int n) {
     return result;
 }
 
+/*
+ * Calculate the binomial distribution of the given n and k
+ */
 double binomial_distribution(int n, int k) {
     return factorial(n) / (double) (factorial(k) * factorial(n - k));
 }
 
+/*
+ * Calculate the bernstein polynomial with given n, i and u
+ */
 double bernstein_polynomial(int n, int i, float u) {
     return binomial_distribution(n, i) * pow(u, (double) i) * pow((1 - u), (double) (n - i));
 }
@@ -49,6 +58,7 @@ void evaluate_bezier_curve(float *x, float *y, control_point p[], int num_points
     *y = 0.0;
     double bernstein = 0.0;
 
+    // Calculate the x and y coordinates for every control point
     for (int i = 0; i < num_points; i++) {
         bernstein = bernstein_polynomial(num_points - 1, i, u);
         *x += bernstein * p[i].x;
@@ -81,6 +91,9 @@ void draw_bezier_curve(int num_segments, control_point p[], int num_points) {
     float x, y;
 
     glBegin(GL_LINE_STRIP);
+
+    // Approximate the x and y coordinaties with evaluate_bezier_curve for 0 to 1, to 1.001 to prevent
+    // flaot precision errors
     for (double u = 0; u <= 1.001; u += 0.001) {
         evaluate_bezier_curve(&x, &y, p, num_points, u);
         glVertex2f(x, y);
@@ -97,9 +110,11 @@ void draw_bezier_curve(int num_segments, control_point p[], int num_points) {
 int intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
     float bezier_x, bezier_y;
 
+    // Find if the point is intersected for every point between 0 and 1.001
     for (double u = 0; u <= 1.001; u += 0.001) {
         evaluate_bezier_curve(&bezier_x, &bezier_y, p, 4, u);
 
+        // If there is an intersection return true and set the Y value
         if (fabs(bezier_x - x) <= 0.001) {
             *y = bezier_y;
             return 1;
