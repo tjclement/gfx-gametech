@@ -98,7 +98,6 @@ shade_reflection(intersection_point ip)
 vec3
 shade(intersection_point ip)
 {
-  fprintf(stderr, "%d", ip.material);
   switch (ip.material)
   {
     case 0:
