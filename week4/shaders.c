@@ -36,7 +36,14 @@ shade_constant(intersection_point ip)
 vec3
 shade_matte(intersection_point ip)
 {
-    return v3_create(1, 0, 0);
+    float lightContribution = 0;
+    for(int i = 0; i < scene_num_lights; i++) {
+        vec3 li = v3_normalize(v3_subtract(scene_lights[i].position, ip.p));
+        
+        lightContribution += scene_lights[i].intensity * fmaxf(0.0, v3_dotprod(ip.n, li));
+    }
+    lightContribution += scene_ambient_light;
+    return v3_create(lightContribution, lightContribution, lightContribution);
 }
 
 vec3
@@ -56,6 +63,7 @@ shade_reflection(intersection_point ip)
 vec3
 shade(intersection_point ip)
 {
+  fprintf(stderr, "%d", ip.material);
   switch (ip.material)
   {
     case 0:
