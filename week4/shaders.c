@@ -40,9 +40,12 @@ shade_matte(intersection_point ip)
     for(int i = 0; i < scene_num_lights; i++) {
         vec3 li = v3_normalize(v3_subtract(scene_lights[i].position, ip.p));
         
-        lightContribution += scene_lights[i].intensity * fmaxf(0.0, v3_dotprod(ip.n, li));
+        if(!shadow_check(ip.i, li)){
+            lightContribution += scene_lights[i].intensity * fmaxf(0.0, v3_dotprod(ip.n, li));
+        }
     }
     lightContribution += scene_ambient_light;
+    lightContribution = fminf(1.0, lightContribution);
     return v3_create(lightContribution, lightContribution, lightContribution);
 }
 
