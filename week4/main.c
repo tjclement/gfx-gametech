@@ -184,7 +184,7 @@ ray_trace(void)
     image_plane_height = 2.0 * tan(0.5*VFOV/180*M_PI);
     image_plane_width = image_plane_height * (1.0 * framebuffer_width / framebuffer_height);
 
-    float bottom, left, Vec1_tmp, Vec2_tmp;
+    float bottom, left, Us, Vs;
 
     left = -image_plane_width * 0.5;
     bottom = image_plane_height * 0.5;
@@ -200,18 +200,18 @@ ray_trace(void)
             /* With the formula "b + (t−b) * ((j+ 0.5) / ny)" the vector is calculted.
              * (t-b) equals the negative image_plane_height
              */
-            Vec1_tmp = bottom + (-image_plane_height*(j+0.5)/framebuffer_height);
+            Us = bottom + (-image_plane_height*(j+0.5)/framebuffer_height);
 
             /* using the formule: "l + (r−l) * ((i+ 0.5) / nx)" to calculate the vector
              * (r-l) equals the image_plane_width.
              */
-            Vec2_tmp = left + (image_plane_width*(i+0.5)/framebuffer_width);
+            Vs = left + (image_plane_width*(i+0.5)/framebuffer_width);
 
             /*
             /* Calculate the vector through the pixel (for "Ray through pixel")
              * Using the formula "Us * U + Vs * v + n * w"
              */
-            vec3 UV = v3_add(v3_multiply(up_vector, Vec1_tmp), v3_multiply(right_vector, Vec2_tmp));
+            vec3 UV = v3_add(v3_multiply(up_vector, Us), v3_multiply(right_vector, Vs));
             vec3 ray = v3_add(forward_vector, UV);
 
             /* Fills the color */
