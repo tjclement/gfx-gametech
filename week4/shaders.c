@@ -38,11 +38,21 @@ shade_matte(intersection_point ip)
 {
     float lightContribution = 0;
     for(int i = 0; i < scene_num_lights; i++) {
+        // The vector from the light source to our point of interest
         vec3 li = v3_normalize(v3_subtract(scene_lights[i].position, ip.p));
         
-        lightContribution += scene_lights[i].intensity * fmaxf(0.0, v3_dotprod(ip.n, li));
+        // Check if shadow falls on ip.p. It is offset by a small fraction of its normal vector to
+        // prevent self-shadowing on the spheres.
+        if(!shadow_check(v3_add(ip.p, v3_multiply(ip.n, 0.0001)), li)){
+            lightContribution += scene_lights[i].intensity * fmaxf(0.0, v3_dotprod(ip.n, li));
+        }
     }
+    
+    // Add ambient lighting to our point shading
     lightContribution += scene_ambient_light;
+
+    // Don't allow the contribution to be > 1
+    lightContribution = fminf(1.0, lightContribution);
     return v3_create(lightContribution, lightContribution, lightContribution);
 }
 
@@ -63,8 +73,8 @@ shade_blinn_phong(intersection_point ip)
 
         // Add the highlight to phong
         phong += (scene_lights[i].intensity * fmaxf(0, pow(v3_dotprod(h, ip.n), 50)));
-
-        if(!shadow_check(v3_add(ip.p, v3_multiply(ip.n, 0.0005)), scene_lights[i].position))
+        
+        if(!shadow_check(v3_add(ip.p, v3_multiply(ip.n, 0.0001)), li)){
         {
             // If there is no shadow, calculate the scene light color/intensity
             matte += (scene_lights[i].intensity * fmaxf(0, v3_dotprod(ip.n, li)));
@@ -107,7 +117,6 @@ shade_reflection(intersection_point ip)
 vec3
 shade(intersection_point ip)
 {
-  fprintf(stderr, "%d", ip.material);
   switch (ip.material)
   {
     case 0:
