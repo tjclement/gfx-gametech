@@ -87,7 +87,19 @@ shade_blinn_phong(intersection_point ip)
 vec3
 shade_reflection(intersection_point ip)
 {
-    return v3_create(1, 0, 0);
+
+    // First step is to calculate the shading vectors
+    vec3 matte = shade_matte(ip);
+
+    // We can now use the given formula r = 2n(i . n) - i to get the reflected direction
+    vec3 r = v3_subtract((v3_multiply(v3_multiply(ip.n, 2), v3_dotprod(ip.i, ip.n))), ip.i);
+
+    // calculate the reflection and fix selfshading by shifting to the normal vector of the point
+    vec3 reflection = ray_color(ip.ray_level + 1, v3_add(ip.p, v3_multiply(ip.n, 0.0001)), r);
+
+    // Last step is to make sure that the surface colour consists of 75% matte and 25% reflected colour
+    return v3_add(v3_multiply(matte, 0.75), v3_multiply(reflection, 0.25));
+
 }
 
 // Returns the shaded color for the given point to shade.
