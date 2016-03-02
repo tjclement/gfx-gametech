@@ -38,20 +38,20 @@ shade_matte(intersection_point ip)
 {
     float lightContribution = 0;
     for(int i = 0; i < scene_num_lights; i++) {
-        /* The vector from the light source to our point of interest */
+        // The vector from the light source to our point of interest
         vec3 li = v3_normalize(v3_subtract(scene_lights[i].position, ip.p));
         
-        /* Check if shadow falls on ip.p. It is offset by a small fraction of its normal vector to
-         * prevent self-shadowing on the spheres. */
+        // Check if shadow falls on ip.p. It is offset by a small fraction of its normal vector to
+        // prevent self-shadowing on the spheres.
         if(!shadow_check(v3_add(ip.p, v3_multiply(ip.n, 0.0001)), li)){
             lightContribution += scene_lights[i].intensity * fmaxf(0.0, v3_dotprod(ip.n, li));
         }
     }
     
-    /* Add ambient lighting to our point shading */
+    // Add ambient lighting to our point shading
     lightContribution += scene_ambient_light;
 
-    /* Don't allow the contribution to be > 1 */
+    // Don't allow the contribution to be > 1
     lightContribution = fminf(1.0, lightContribution);
     return v3_create(lightContribution, lightContribution, lightContribution);
 }
