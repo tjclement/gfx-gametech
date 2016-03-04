@@ -226,11 +226,10 @@ int traversal(bvh_node node, intersection_point* ip, vec3 origin,
     int left = bbox_intersect(&l_min, &l_max, child_l.bbox, origin, direction, t0, t1);
     int right = bbox_intersect(&r_min, &r_max, child_r.bbox, origin, direction, t0, t1);
 
-    // If both nodes are intersected, look at them both and find which one of
-    // them contains the nearest triangle
+    // Find which node has the nearest triangle if both have an intersection.
     if(left && right) {
-        intersection_point *ip1 = malloc(sizeof(intersection_point)),
-                *ip2 = malloc(sizeof(intersection_point));
+        intersection_point  *ip1 = malloc(sizeof(intersection_point)),
+                            *ip2 = malloc(sizeof(intersection_point));
         left = traversal(child_l, ip1, origin, direction, l_min, l_max);
         right = traversal(child_r, ip2, origin, direction, r_min, r_max);
 
@@ -250,9 +249,10 @@ int traversal(bvh_node node, intersection_point* ip, vec3 origin,
         return traversal(child_l, ip, origin, direction, l_min, l_max);
     } else if (right) { //Find the closest triangle for child_r
         return traversal(child_r, ip, origin, direction, r_min, r_max);
-    } else { // No intersection, so we can stop searching
-        return 0;
     }
+
+    // No intersection, so we can stop searching
+    return 0;
 }
 
 // Returns the nearest hit of the given ray with objects in the scene
