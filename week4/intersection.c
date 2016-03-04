@@ -226,30 +226,35 @@ int traversal(bvh_node node, intersection_point* ip, vec3 origin,
     int left = bbox_intersect(&l_min, &l_max, child_l.bbox, origin, direction, t0, t1);
     int right = bbox_intersect(&r_min, &r_max, child_r.bbox, origin, direction, t0, t1);
 
-    // If both nodes are intersected, look at them both and find which one of
-    // them contains the nearest triangle
+    // Find which node has the nearest triangle if both have an intersection.
     if(left && right) {
-        intersection_point *ip1 = malloc(sizeof(intersection_point)),
-                *ip2 = malloc(sizeof(intersection_point));
-        left = traversal(child_l, ip1, origin, direction, l_min, l_max);
-        right = traversal(child_r, ip2, origin, direction, r_min, r_max);
+        intersection_point ip1, ip2;
+        left = traversal(child_l, &ip1, origin, direction, l_min, l_max);
+        right = traversal(child_r, &ip2, origin, direction, r_min, r_max);
 
         if (left && right) {
-            *ip = (ip1->t > ip2->t) ? *ip2 : *ip1;
+            *ip = (ip1.t > ip2.t) ? ip2 : ip1;
         } else if (left) {
-            *ip = *ip1;
+            *ip = ip1;
         } else if (right) {
-            *ip = *ip2;
+            *ip = ip2;
         }
 
         return left || right;
-    } else if (left) { // Find the closest triangle for the first child node
-        return traversal(child_l, ip, origin, direction, l_min, l_max);
-    } else if (right) { //Find the closest triangle for child_r
-        return traversal(child_r, ip, origin, direction, r_min, r_max);
-    } else { // No intersection, so we can stop searching
-        return 0;
     }
+
+    // Find the closest triangle for the first child node
+    if (left) {
+        return traversal(child_l, ip, origin, direction, l_min, l_max);
+    }
+
+    //Find the closest triangle for child_r
+    if (right) {
+        return traversal(child_r, ip, origin, direction, r_min, r_max);
+    }
+
+    // No intersection, so we can stop searching
+    return 0;
 }
 
 // Returns the nearest hit of the given ray with objects in the scene
