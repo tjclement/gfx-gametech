@@ -196,26 +196,45 @@ ray_trace(void)
     {
         for (i = 0; i < framebuffer_width; i++)
         {
+            
+            if(!do_antialiasing){
+                /* With the formula "b + (t−b) * ((j+ 0.5) / ny)" the vector is calculated.
+                 * (t-b) equals the negative image_plane_height
+                 */
+                Us = bottom + (-image_plane_height*(j+0.5)/framebuffer_height);
 
-            /* With the formula "b + (t−b) * ((j+ 0.5) / ny)" the vector is calculated.
-             * (t-b) equals the negative image_plane_height
-             */
-            Us = bottom + (-image_plane_height*(j+0.5)/framebuffer_height);
+                /* using the formula: "l + (r−l) * ((i+ 0.5) / nx)" to calculate the vector
+                 * (r-l) equals the image_plane_width.
+                 */
+                Vs = left + (image_plane_width*(i+0.5)/framebuffer_width);
 
-            /* using the formule: "l + (r−l) * ((i+ 0.5) / nx)" to calculate the vector
-             * (r-l) equals the image_plane_width.
-             */
-            Vs = left + (image_plane_width*(i+0.5)/framebuffer_width);
+                /*
+                /* Calculate the vector through the pixel (for "Ray through pixel")
+                 * Using the formula "Us * U + Vs * v + n * w"
+                 */
+                vec3 UV = v3_add(v3_multiply(up_vector, Us), v3_multiply(right_vector, Vs));
+                vec3 ray = v3_add(forward_vector, UV);
 
-            /*
-            /* Calculate the vector through the pixel (for "Ray through pixel")
-             * Using the formula "Us * U + Vs * v + n * w"
-             */
-            vec3 UV = v3_add(v3_multiply(up_vector, Us), v3_multiply(right_vector, Vs));
-            vec3 ray = v3_add(forward_vector, UV);
-
-            /* Fills the color */
-            color = ray_color(0, scene_camera_position, ray);
+                /* Fills the color */
+                color = ray_color(0, scene_camera_position, ray);
+            } else {
+                float Us1 = bottom + (-image_plane_height*(j+0.25)/framebuffer_height);
+                float Us2 = bottom + (-image_plane_height*(j+0.75)/framebuffer_height);
+                float Vs1 = left + (image_plane_width*(i+0.25)/framebuffer_width);
+                float Vs2 = left + (image_plane_width*(i+0.75)/framebuffer_width);
+                
+                vec3 UV1 = v3_add(v3_multiply(up_vector, Us1), v3_multiply(right_vector, Vs1));
+                vec3 UV2 = v3_add(v3_multiply(up_vector, Us2), v3_multiply(right_vector, Vs1));
+                vec3 UV3 = v3_add(v3_multiply(up_vector, Us1), v3_multiply(right_vector, Vs2));
+                vec3 UV4 = v3_add(v3_multiply(up_vector, Us2), v3_multiply(right_vector, Vs2));
+                
+                vec3 color1 = ray_color(0, scene_camera_position, v3_add(forward_vector, UV1));
+                vec3 color2 = ray_color(0, scene_camera_position, v3_add(forward_vector, UV2));
+                vec3 color3 = ray_color(0, scene_camera_position, v3_add(forward_vector, UV3));
+                vec3 color4 = ray_color(0, scene_camera_position, v3_add(forward_vector, UV4));
+                
+                color = v3_multiply( v3_add(v3_add(color1, color2), v3_add(color3, color4)), 0.25 );
+            }
 
             /* Output pixel color */
             put_pixel(i, j, color.x, color.y, color.z);
