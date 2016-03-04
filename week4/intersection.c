@@ -12,6 +12,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "intersection.h"
 #include "v3math.h"
 #include "constants.h"
@@ -37,6 +38,10 @@ unsigned long long num_bboxes_tested = 0;
 
 static int  find_first_intersected_bvh_triangle(intersection_point* ip,
                 vec3 ray_origin, vec3 ray_direction);
+
+
+int traversal(bvh_node node, intersection_point* ip, vec3 origin,
+                  vec3 direction, float t0, float t1);
 
 // Checks if the given triangle is intersected by ray with given
 // origin and direction.
@@ -179,7 +184,75 @@ static int
 find_first_intersected_bvh_triangle(intersection_point* ip,
     vec3 ray_origin, vec3 ray_direction)
 {
+    float t_min, t_max;
+    bvh_node root = *bvh_root;
+
+    // Only continue if this box is intersected
+    if (bbox_intersect(&t_min, &t_max, root.bbox, ray_origin, ray_direction, 0, INFINITY)) {
+        return traversal(root, ip, ray_origin, ray_direction, t_min, t_max);
+    }
+
     return 0;
+}
+
+
+int traversal(bvh_node node, intersection_point* ip, vec3 origin,
+                  vec3 direction, float t0, float t1)
+{
+    float l_min, l_max, r_min, r_max;
+
+    // If the parent node is a leafnode, we can already check if there is a matching triangle, and return
+    // the closest match.
+    if(node.is_leaf) {
+        triangle *box;
+        box = leaf_node_triangles(&node);
+
+        // Loop through all of the triangles in this leaf
+        for(int i = 0; i < leaf_node_num_triangles(&node); i++) {
+
+            // If an intersection is found, return 1. We can stop searching.
+            if(ray_intersects_triangle(ip, box[i], origin, direction))
+                return 1;
+
+        }
+
+        return 0;
+    }
+
+    bvh_node child_l = *inner_node_left_child(&node);
+    bvh_node child_r = *inner_node_right_child(&node);
+
+    // Check for both childs if they will be intersected
+    int left = bbox_intersect(&l_min, &l_max, child_l.bbox, origin, direction, t0, t1);
+    int right = bbox_intersect(&r_min, &r_max, child_r.bbox, origin, direction, t0, t1);
+
+    // If both nodes are intersected, look at them both and find which one of
+    // them contains the nearest triangle
+    if(left && right) {
+        intersection_point *ip1 = malloc(sizeof(intersection_point)),
+                *ip2 = malloc(sizeof(intersection_point));
+        left = traversal(child_l, ip1, origin, direction, l_min, l_max);
+        right = traversal(child_r, ip2, origin, direction, r_min, r_max);
+
+        if (left && right) {
+            if (ip1->t > ip2->t)
+                *ip = *ip2;
+            else
+                *ip = *ip1;
+        } else if (left) {
+            *ip = *ip1;
+        } else if (right) {
+            *ip = *ip2;
+        }
+
+        return left || right;
+    } else if (left) { // Find the closest triangle for the first child node
+        return traversal(child_l, ip, origin, direction, l_min, l_max);
+    } else if (right) { //Find the closest triangle for child_r
+        return traversal(child_r, ip, origin, direction, r_min, r_max);
+    } else { // No intersection, so we can stop searching
+        return 0;
+    }
 }
 
 // Returns the nearest hit of the given ray with objects in the scene
