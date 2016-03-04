@@ -197,7 +197,7 @@ ray_trace(void)
         for (i = 0; i < framebuffer_width; i++)
         {
 
-            /* With the formula "b + (t−b) * ((j+ 0.5) / ny)" the vector is calculted.
+            /* With the formula "b + (t−b) * ((j+ 0.5) / ny)" the vector is calculated.
              * (t-b) equals the negative image_plane_height
              */
             Us = bottom + (-image_plane_height*(j+0.5)/framebuffer_height);

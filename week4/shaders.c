@@ -74,8 +74,7 @@ shade_blinn_phong(intersection_point ip)
         // Add the highlight to phong
         phong += (scene_lights[i].intensity * fmaxf(0, pow(v3_dotprod(h, ip.n), 50)));
         
-        if(!shadow_check(v3_add(ip.p, v3_multiply(ip.n, 0.0001)), li)){
-        {
+        if(!shadow_check(v3_add(ip.p, v3_multiply(ip.n, 0.0001)), li)) {
             // If there is no shadow, calculate the scene light color/intensity
             matte += (scene_lights[i].intensity * fmaxf(0, v3_dotprod(ip.n, li)));
         }
