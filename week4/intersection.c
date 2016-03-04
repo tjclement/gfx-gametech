@@ -235,10 +235,7 @@ int traversal(bvh_node node, intersection_point* ip, vec3 origin,
         right = traversal(child_r, ip2, origin, direction, r_min, r_max);
 
         if (left && right) {
-            if (ip1->t > ip2->t)
-                *ip = *ip2;
-            else
-                *ip = *ip1;
+            *ip = (ip1->t > ip2->t) ? *ip2 : *ip1;
         } else if (left) {
             *ip = *ip1;
         } else if (right) {
