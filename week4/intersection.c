@@ -228,16 +228,16 @@ int traversal(bvh_node node, intersection_point* ip, vec3 origin,
 
     // Find which node has the nearest triangle if both have an intersection.
     if(left && right) {
-        intersection_point ip1, ip2;
-        left = traversal(child_l, &ip1, origin, direction, l_min, l_max);
-        right = traversal(child_r, &ip2, origin, direction, r_min, r_max);
+        intersection_point ip_l, ip_r;
+        left = traversal(child_l, &ip_l, origin, direction, l_min, l_max);
+        right = traversal(child_r, &ip_r, origin, direction, r_min, r_max);
 
         if (left && right) {
-            *ip = (ip1.t > ip2.t) ? ip2 : ip1;
+            *ip = (ip_l.t > ip_r.t) ? ip_r : ip_l;
         } else if (left) {
-            *ip = ip1;
+            *ip = ip_l;
         } else if (right) {
-            *ip = ip2;
+            *ip = ip_r;
         }
 
         return left || right;
