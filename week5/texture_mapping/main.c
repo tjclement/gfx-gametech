@@ -4,10 +4,10 @@
  * Description ..... Creates OpenGL window and draws the scene.
  * Created by ...... Paul Melis, Robert Belleman, Jurgen Sturm
  *
- * Student name ....
- * Student email ...
- * Collegekaart ....
- * Date ............
+ * Student name Tom Clement & Matthijs Klijn
+ * Student email Tom.justme@gmail.com, matthijsthoolen@hotmail.com
+ * Collegekaart 10468498, 10447822
+ * Date 11-3-2016
  * Comments ........
  *
  * (always fill in these fields before submitting!!)
@@ -430,7 +430,7 @@ DrawGLScene(void)
 
     glPushAttrib(GL_LIGHTING_BIT);
     glDisable(GL_LIGHTING);
-    //DrawPolylist(polylistSkydome);
+    DrawPolylist(polylistSkydome);
     glPopAttrib();
 
     glutSwapBuffers();

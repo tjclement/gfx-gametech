@@ -5,10 +5,10 @@
  * Date ............ 22.11.2007
  * Created by ...... Paul Melis
  *
- * Student name ....
- * Student email ...
- * Collegekaart ....
- * Date ............
+ * Student name Tom Clement & Matthijs Klijn
+ * Student email Tom.justme@gmail.com, matthijsthoolen@hotmail.com
+ * Collegekaart 10468498, 10447822
+ * Date 11-3-2016
  * Comments ........
  *
  * (always fill in these fields before submitting!!)
@@ -102,9 +102,12 @@ setHemispherePoint(vec3 *p, vec3* n, vec3* t, int latitude, int longitude,
     p->y = oy + sin(latitude * dToR) * s;
     p->z = oz + cos(longitude * dToR) * cos(latitude * dToR) * s;
 
-    // Set texture coordinate
-    t->x = 0.0;
-    t->y = 0.0;
+    //printf("%d longitude\n", longitude);
+    //printf("%d latitude\n", latitude);
+
+    // Set texture coordinate EDITED!!!
+    t->x = longitude / 360.0;
+    t->y = latitude / 90.0;
 
     // calculate normal
     n->x = p->x - ox;
@@ -197,8 +200,13 @@ createCylinder(polys * list, double radius, double height,
             p.normal[i].x /= len;
             p.normal[i].z /= len;
 
-            // Set texture coordinate
-            p.tcoord[i].x = p.tcoord[i].y = 0.0;
+            //printf("p.pts[i].y = %d\n", p.pts[i].y);
+
+            // Set texture coordinate EDITED TREE
+            p.tcoord[i].x = longitude / 360.0;
+            p.tcoord[i].y = p.pts[i].y;
+            //p.tcoord[i].y = 0;
+
         }
 
         AddPolyToPolylist(list, p);
