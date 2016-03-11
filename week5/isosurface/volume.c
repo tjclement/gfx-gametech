@@ -38,6 +38,13 @@ cell
 get_cell(int i, int j, int k)
 {
     cell c;
+    vec3 origin = v3_create(i, j, k);
+    
+    for(int i = 0; i < 8; i++) {
+        c.p[i] = v3_add(v3_create(i%2==0 ? 0:1, (i==0||i==1||i==4||i==5) ? 0:1, i<4 ? 0:1), origin);
+        c.value[i] = (double) volume[voxel2idx(c.p[i].x, c.p[i].y, c.p[i].z)];
+    }
+    
     return c;
 }
 

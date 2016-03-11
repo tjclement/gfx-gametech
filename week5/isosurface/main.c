@@ -225,6 +225,27 @@ void DrawVolumeAsIsosurface(void)
 
 void FillArrayWithIsosurface(void)
 {
+    int n, triangle_count = 0;
+    
+    triangle triangles[12];
+    
+    for(int i = 0; i < nx - 1; i++) {
+        for(int j = 0; j < ny - 1; j++) {
+            for(int k = 0; k < nz - 1; k++) {
+                n = generate_cell_triangles(triangles, get_cell(i, j, k), isovalue);
+                
+                for (int x = 0; x < n; ++x) {
+                    for (int y = 0; y < 3; ++y) {
+                        AddVertexToArray(triangles[x].p[y], triangles[x].n[y]);
+                    }
+                }
+                
+                triangle_count += n;
+            }
+        }
+    }
+    
+    printf("Triangle count: %d\r\n", triangle_count);
 }
 
 void DrawScene(void)

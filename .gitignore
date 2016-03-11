@@ -39,3 +39,5 @@ CMakeLists.txt
 transformations
 gimbal
 week2.zip
+*.xcworkspacedata
+*.xcuserstate
