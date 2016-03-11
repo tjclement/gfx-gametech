@@ -257,8 +257,8 @@ InitGL(void)
             glBindTexture(GL_TEXTURE_2D, texture_names[i]);
             glCheckError("glBindTexture");
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glCheckError("glTexParameteri");
@@ -312,6 +312,7 @@ DrawPolylist(polys * list)
         glBegin(GL_POLYGON);
         for (j = 0; j < p.points; j++)
         {
+            glTexCoord2f(p.tcoord[j].x, p.tcoord[j].y);
             glNormal3f(p.normal[j].x, p.normal[j].y, p.normal[j].z);
             glVertex3f(p.pts[j].x, p.pts[j].y, p.pts[j].z);
         }
