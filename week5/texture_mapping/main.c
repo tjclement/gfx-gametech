@@ -433,11 +433,12 @@ DrawGLScene(void)
 
         DrawPolylist(polylistTreeStem);
 
+        // Calculate a random number of leafs, than calculate the turn for every leaf
         int nrleafs = rand() % 6 + 5;
         int turn = 360/nrleafs;
 
+        // Draw every leaf
         for (int i = 0; i < nrleafs; i++) {
-            printf("loc = %d\n", turn);
             DrawPolylist(polylistTreeLeafs);
             glRotatef(turn, 0, 1, 0);
         }
