@@ -1,9 +1,9 @@
 /* Computer Graphics, Assignment, Volume rendering with cubes/points/isosurface
  *
- * Student name ....
- * Student email ...
- * Collegekaart ....
- * Date ............
+ * Student name Tom Clement & Matthijs Klijn
+ * Student email Tom.justme@gmail.com, matthijsthoolen@hotmail.com
+ * Collegekaart 10468498, 10447822
+ * Date 11-3-2016
  * Comments ........
  *
  * (always fill in these fields before submitting!!)
@@ -23,8 +23,12 @@ interpolate_points(unsigned char isovalue, vec3 p1, vec3 p2, unsigned char v1, u
 {
     /* Initially, simply return the midpoint between p1 and p2.
        So no real interpolation is done yet */
+    
+    float ratio1 = v1 < v2 ? (isovalue - v1) / (v2 - v1) : 1 - ((isovalue - v2) / (v1 - v2));
+    float ratio2 = 1 - ratio1;
+    
 
-    return v3_add(v3_multiply(p1, 0.5), v3_multiply(p2, 0.5));
+    return v3_add(v3_multiply(p1, ratio1), v3_multiply(p2, ratio2));
 }
 
 int generate_triangle(triangle *triangles, unsigned char isovalue, cell c, int v0, int v1, int v2, int v3, int v4, int v5)
@@ -60,9 +64,9 @@ generate_tetrahedron_triangles(triangle *triangles, unsigned char isovalue, cell
     int bit_value = 0x00;
     
     bit_value += c.value[v0] > isovalue ? 1 : 0;
-    bit_value += c.value[v1] > isovalue ? 1 << 1 : 0;
-    bit_value += c.value[v2] > isovalue ? 1 << 2 : 0;
-    bit_value += c.value[v3] > isovalue ? 1 << 3 : 0;
+    bit_value += c.value[v1] > isovalue ? 2 : 0;
+    bit_value += c.value[v2] > isovalue ? 4 : 0;
+    bit_value += c.value[v3] > isovalue ? 8 : 0;
     
     switch(bit_value) {
         case 0x00:
